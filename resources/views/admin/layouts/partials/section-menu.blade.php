@@ -35,7 +35,7 @@
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="{{ route('products.index') }}" class="">
+                            <a href="{{ route('productos.index') }}" class="">
                                 <div class="text">Productos</div>
                             </a>
                         </li>
@@ -49,12 +49,12 @@
                     <ul class="sub-menu">
                       
                         <li class="sub-menu-item">
-                            <a href="  {{ route('categories.create') }}" class="">
+                            <a href="  " class="">
                                 <div class="text">nueva categoría</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="{{ route('categories.index') }}" class="">
+                            <a href="{{ route('categorias.index') }}" class="">
                                 <div class="text">categorías</div>
                             </a>
                         </li>
@@ -67,12 +67,12 @@
                     </a>
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
-                            <a href="{{ route('subcategories.create') }}" class="">
+                            <a href="" class="">
                                 <div class="text">Nueva subcategoría</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="{{ route('subcategories.index') }}" class="">
+                            <a href="" class="">
                                 <div class="text">subcategorías</div>
                             </a>
                         </li>
@@ -98,7 +98,7 @@
                     </ul>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('producstvariations.index') }}" class="">
+                    <a href="" class="">
                         <div class="icon"><i class="icon-image"></i></div>
                         <div class="text">PRODCTO TALLA</div>
                     </a>
@@ -111,7 +111,7 @@
                 </li>
 
                 <li class="menu-item">
-                    <a href="{{ route('users.index') }}" class="">
+                    <a href="" class="">
                         <div class="icon"><i class="icon-user"></i></div>
                         <div class="text">User</div>
                     </a>
