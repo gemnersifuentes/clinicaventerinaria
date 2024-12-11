@@ -107,12 +107,16 @@
 
             <div class="form-group">
                 <label for="marca_id">Marca</label>
-                <select class="form-control @error('marca_id') is-invalid @enderror" id="marca_id" name="marca_id">
-                    <option value="">Seleccionar Marca</option>
+                <select name="marca_id" id="marca_id" class="form-control">
+                    <option value="">Selecciona una marca</option>
                     @foreach ($marcas as $marca)
-                        <option value="{{ $marca->id }}" {{ old('marca_id') == $marca->id ? 'selected' : '' }}>{{ $marca->nombre }}</option>
+                        <option value="{{ $marca->id }}" {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
+                            {{ $marca->marca }}
+                        </option>
                     @endforeach
                 </select>
+                
+                
                 @error('marca_id')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror

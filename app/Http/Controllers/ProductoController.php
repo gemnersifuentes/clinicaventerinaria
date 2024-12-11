@@ -23,8 +23,10 @@ class ProductoController extends Controller
     {
         // Obtener todas las categorías y marcas para mostrarlas en el formulario
         $categorias = Categoria::all();
-        $marcas = Marca::all();
+    
 
+        $marcas = Marca::all();
+        
         // Retornar la vista de creación pasando las categorías y marcas
         return view('admin.productos.create', compact('categorias', 'marcas'));
     }
@@ -180,35 +182,39 @@ public function updateTallas(Request $request, $productoId)
 {
     $producto = Producto::findOrFail($productoId);
 
-    // Verifica que el campo 'tallas' esté presente en la solicitud
-    if (!$request->has('tallas')) {
-        return redirect()->back()->withErrors(['tallas' => 'No se han proporcionado tallas.']);
+    // Actualizar tallas existentes
+    if ($request->has('tallas_existentes')) {
+        foreach ($request->input('tallas_existentes') as $tallaId => $data) {
+            $producto->tallas()->updateExistingPivot($tallaId, [
+                'precio' => $data['precio'],
+                'stock' => $data['stock']
+            ]);
+        }
     }
 
-    // Itera sobre los datos de las tallas
-    foreach ($request->input('tallas') as $index => $tallaData) {
-        // Verifica que 'id', 'precio' y 'stock' estén presentes
-        if (!isset($tallaData['id']) || !isset($tallaData['precio']) || !isset($tallaData['stock'])) {
-            return redirect()->back()->withErrors(['talla_id' => 'Faltan datos para la talla: ID, Precio o Stock.']);
+    // Agregar nuevas tallas
+    if ($request->has('tallas_nuevas')) {
+        foreach ($request->input('tallas_nuevas') as $data) {
+            $producto->tallas()->attach($data['id'], [
+                'precio' => $data['precio'],
+                'stock' => $data['stock']
+            ]);
         }
-
-        // Verifica que el 'id' de la talla exista en la tabla de 'categorias'
-        $talla = Categoria::find($tallaData['id']);
-        if (!$talla) {
-            return redirect()->back()->withErrors(['talla_id' => 'La talla seleccionada no es válida.']);
-        }
-
-        // Asocia la talla al producto con los datos adicionales (precio y stock)
-        $producto->tallas()->attach($tallaData['id'], [
-            'precio' => $tallaData['precio'],
-            'stock' => $tallaData['stock'],
-        ]);
     }
 
-    // Redirige a la vista de gestión de tallas con un mensaje de éxito
     return redirect()->route('productos.manageTallas', $productoId)->with('success', 'Tallas actualizadas correctamente.');
 }
 
+
+public function deleteTalla($productoId, $tallaId)
+{
+    $producto = Producto::findOrFail($productoId);
+
+    // Eliminar la relación con la talla
+    $producto->tallas()->detach($tallaId);
+
+    return response()->json(['success' => 'Talla eliminada correctamente.']);
+}
 
 
 

@@ -121,7 +121,7 @@
                 <select class="form-control @error('marca_id') is-invalid @enderror" id="marca_id" name="marca_id">
                     <option value="">Seleccione una marca</option>
                     @foreach ($marcas as $marca)
-                        <option value="{{ $marca->id }}" {{ old('marca_id', $producto->marca_id) == $marca->id ? 'selected' : '' }}>{{ $marca->nombre }}</option>
+                        <option value="{{ $marca->id }}" {{ old('marca_id', $producto->marca_id) == $marca->id ? 'selected' : '' }}>{{ $marca->marca }}</option>
                     @endforeach
                 </select>
                 @error('marca_id')

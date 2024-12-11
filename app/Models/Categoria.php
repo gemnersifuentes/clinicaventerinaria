@@ -41,4 +41,6 @@ public function productos()
                 ->withPivot('precio', 'stock')
                 ->withTimestamps();
 }
+
+
 }

@@ -63,17 +63,17 @@
                 <li class="menu-item has-children">
                     <a href="javascript:void(0);" class="menu-item-button">
                         <div class="icon"><i class="icon-layers"></i></div>
-                        <div class="text">Subcategoria</div>
+                        <div class="text">Maracas</div>
                     </a>
                     <ul class="sub-menu">
                         <li class="sub-menu-item">
-                            <a href="" class="">
-                                <div class="text">Nueva subcategoría</div>
+                            <a href="{{ route('marcas.create') }}" class="">
+                                <div class="text">Nueva marca</div>
                             </a>
                         </li>
                         <li class="sub-menu-item">
-                            <a href="" class="">
-                                <div class="text">subcategorías</div>
+                            <a href="{{ route('marcas.index') }}" class="">
+                                <div class="text">Marcas</div>
                             </a>
                         </li>
                     </ul>

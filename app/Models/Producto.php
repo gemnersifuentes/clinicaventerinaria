@@ -19,6 +19,7 @@ class Producto extends Model
         'stock',
         'imagenes',
         'condicion',
+        'descuento',
         'estado',
         'categoria_id',
         'marca_id',

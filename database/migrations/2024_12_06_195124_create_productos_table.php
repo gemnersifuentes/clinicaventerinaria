@@ -22,12 +22,11 @@ return new class extends Migration
             $table->unsignedBigInteger('categoria_id'); // Relación con la categoría principal
             $table->unsignedBigInteger('marca_id')->nullable(); // Relación con marca opcional
             $table->timestamps();
-        
+
             // Relaciones
             $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
             $table->foreign('marca_id')->references('id')->on('marcas')->onDelete('set null');
         });
-        
     }
 
     /**
