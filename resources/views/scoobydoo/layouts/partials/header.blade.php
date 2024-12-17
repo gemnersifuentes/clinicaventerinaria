@@ -215,7 +215,7 @@
                     </a>
 
                     <div class="flex flex-col">
-                        <span id="cart-total" class="font-semibold">S/. </span>
+                        <span id="cart-total" class="font-semibold">S/.2365 </span>
                     </div>
 
                     <div id="cartDropdownMenu" class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 shadow-lg rounded-md hidden z-50 transition-all duration-500 transform -translate-y-5 opacity-0">

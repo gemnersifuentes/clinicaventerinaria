@@ -25,6 +25,7 @@
         <div id="page" class="">
             <div class="layout-wrap">
 
+fVBN MCXV
 
 @include('admin.layouts.partials.section-menu')
                 <div class="section-content-right">

@@ -242,7 +242,7 @@
 
 
         <div class="mt-4 bg-green-100 text-green-800 font-bold px-4 py-2 rounded">
-            ¡enbios al todo chachapoyas!
+            ¡envios al todo chachapoyas!
         </div>
            
         </div>

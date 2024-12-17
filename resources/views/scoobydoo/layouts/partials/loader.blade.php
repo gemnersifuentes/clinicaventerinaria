@@ -4,8 +4,8 @@
 margin-top: 180px;
 left: 0;
 top: 0;
-width: 100%;
-height: 100%;
+width: 100%!important;
+height: 100%!important;
 background-color: white;
 z-index: 9999;
 display: flex;

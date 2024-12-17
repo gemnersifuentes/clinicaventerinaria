@@ -45,6 +45,7 @@
                         <td>{{ $producto->descuento }}%</td>
                         <td>{{ $producto->categoria->nombre }}</td> <!-- Relación con Categoría -->
                         <td>{{ $producto->marca->marca ?? 'No asignada' }}</td> <!-- Relación con Marca (puede ser nula) -->
+                        <td>{{ $producto->marca->marca ?? 'No asignada' }}</td> <!-- Relación con Marca (puede ser nula) -->
                         <td>
                             <a href="{{ route('productos.edit', $producto->id) }}" class="btn btn-warning">Editar</a>
                             <!-- Botón para gestionar tallas, solo si es un producto de categoría 'Ropa' -->

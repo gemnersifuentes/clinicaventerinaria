@@ -65,7 +65,7 @@ class ProductoController extends Controller
                 $query->orderByDesc('productos.rating');
                 break;
             default:
-                $query->where('productos.condicion', 'nuevo');
+                $query->where('productos.condicion', 'neevo');
         }
     
         // Obtener productos
