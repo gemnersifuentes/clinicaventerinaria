@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Datos_EmpresaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CategoriaController;
@@ -71,3 +72,5 @@ Route::prefix('scoobydoo')->group(function () {
     })->name('terminos');
     
 });
+
+Route::resource('empresa', Datos_EmpresaController::class);
