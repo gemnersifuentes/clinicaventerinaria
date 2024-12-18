@@ -11,9 +11,9 @@ use App\Http\Controllers\ProductoVariacionController;
 
 
 use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\Tienda\CarritoController;
 
-
-
+use App\Http\Controllers\Auth\ClienteAuthController;
 
 
 
@@ -50,24 +50,24 @@ Route::get('/scoobydoo', function () {
     return view('scoobydoo.index'); // Laravel busca en resources/views/scoobydoo/index.blade.php
 });
 Route::prefix('scoobydoo')->group(function () {
- 
     Route::get('productos/search', [\App\Http\Controllers\Tienda\ProductoController::class, 'search'])->name('productos.search');
+    Route::get('productos', [\App\Http\Controllers\Tienda\ProductoController::class, 'index'])->name('scoobydoo.productos.index');
+    Route::get('productos/{id}', [\App\Http\Controllers\Tienda\ProductoController::class, 'show'])->name('productos.show');
 
    
-    Route::get('productos', [\App\Http\Controllers\Tienda\ProductoController::class, 'index'])->name('scoobydoo.productos.index');
-  
-    // Ruta para el detalle de un producto
-    Route::get('productos/{id}', [\App\Http\Controllers\Tienda\ProductoController::class, 'show'])->name('productos.show');
-      // Ruta para agregar productos al carrito
-      Route::get('cart/add/{id}', [\App\Http\Controllers\Tienda\CartController::class, 'addToCart'])->name('cart.add');
 
-      // Ruta para mostrar el carrito
-      Route::get('cart', [\App\Http\Controllers\Tienda\CartController::class, 'showCart'])->name('cart.show');
-  
-      // Ruta para eliminar productos del carrito
-      Route::get('cart/remove/{id}', [\App\Http\Controllers\Tienda\CartController::class, 'removeFromCart'])->name('cart.remove');
-  
-      // Ruta para actualizar la cantidad de un producto en el carrito
-      Route::post('cart/update/{id}', [\App\Http\Controllers\Tienda\CartController::class, 'updateCart'])->name('cart.update');
+    Route::get('/cliente/registro', [ClienteAuthController::class, 'mostrarRegistro'])->name('scoobydoo.cliente.registro');
+    Route::post('/cliente/registro', [ClienteAuthController::class, 'registrar'])->name('scoobydoo.cliente.registro');
+    Route::get('/cliente/login', [ClienteAuthController::class, 'mostrarInicioSesion'])->name('scoobydoo.cliente.login');
+    Route::post('/cliente/login', [ClienteAuthController::class, 'iniciarSesion'])->name('scoobydoo.cliente.login');
+
+    Route::post('/cliente/logout', [ClienteAuthController::class, 'logout'])->name('scoobydoo.cliente.logout');
+
+
+    Route::get('/cliente/mi-cuenta', [ClienteAuthController::class, 'miCuenta'])->name('scoobydoo.cliente.mi_cuenta');
+
+    Route::get('terminos-y-condiciones', function () {
+        return view('scoobydoo.terminos');
+    })->name('terminos');
+    
 });
-

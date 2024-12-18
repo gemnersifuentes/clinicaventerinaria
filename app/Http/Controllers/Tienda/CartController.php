@@ -2,6 +2,13 @@
 
 namespace App\Http\Controllers\Tienda;
 
+use App\Models\CarritoItem;
+use App\Models\Categoria;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\ProductoVariacion;
+
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Producto;
@@ -10,129 +17,97 @@ use App\Models\Talla;
 class CartController extends Controller
 {
     // Método para agregar un producto al carrito
-    public function addToCart(Request $request, $productoId)
+    public function addToCart(Request $request, $producto_id)
     {
-        // Validate request
-        $request->validate([
-            'talla_id' => 'nullable|exists:tallas,id'
-        ]);
-    
-        try {
-            // Get the product
-            $producto = Producto::findOrFail($productoId);
-    
-            // Initialize cart
-            $cart = session()->get('cart', []);
-    
-            // Check if product is clothing and requires size
-            if ($producto->categoria->nombre == 'Ropa') {
-                $tallaId = $request->input('talla_id');
-                
-                // Validate talla for clothing
-                $talla = $producto->tallas()->where('tallas.id', $tallaId)->first();
-                
-                if (!$talla) {
-                    return response()->json([
-                        'success' => false, 
-                        'message' => 'Talla no válida.'
-                    ], 400);
-                }
-    
-                // Check stock
-                $pivotData = $producto->tallas()->where('tallas.id', $tallaId)->first()->pivot;
-                if ($pivotData->stock <= 0) {
-                    return response()->json([
-                        'success' => false, 
-                        'message' => 'Producto agotado.'
-                    ], 400);
-                }
-    
-                // Create or update cart item
-                $cartKey = "{$productoId}_{$tallaId}";
-                if (isset($cart[$cartKey])) {
-                    $cart[$cartKey]['cantidad']++;
-                } else {
-                    $cart[$cartKey] = [
-                        'producto_id' => $productoId,
-                        'nombre' => $producto->nombre,
-                        'talla_id' => $tallaId,
-                        'talla_nombre' => $talla->nombre,
-                        'precio' => $pivotData->precio,
-                        'cantidad' => 1,
-                        'imagen' => json_decode($producto->imagenes)[0] ?? null
-                    ];
-                }
-            } else {
-                // Non-clothing product
-                if (isset($cart[$productoId])) {
-                    $cart[$productoId]['cantidad']++;
-                } else {
-                    $cart[$productoId] = [
-                        'producto_id' => $productoId,
-                        'nombre' => $producto->nombre,
-                        'precio' => $producto->precio,
-                        'cantidad' => 1,
-                        'imagen' => json_decode($producto->imagenes)[0] ?? null
-                    ];
-                }
-            }
-    
-            // Save cart to session
-            session()->put('cart', $cart);
-    
-            // Return success response
+        // Verificar si el usuario está autenticado
+        if (!Auth::guard('cliente')->check()) {
             return response()->json([
-                'success' => true, 
-                'message' => 'Producto agregado al carrito',
-                'cartCount' => count($cart)
+                'success' => false,
+                'message' => 'Debes iniciar sesión para agregar productos al carrito'
+            ], 401);
+        }
+
+        // Buscar el producto
+        $producto = Producto::findOrFail($producto_id);
+
+        // Verificar si es un producto de ropa
+        $esRopa = $producto->categoria->nombre === 'Ropa';
+
+        // Si es ropa, requiere talla
+        if ($esRopa) {
+            $request->validate([
+                'talla_id' => 'required|exists:categorias,id'
             ]);
-    
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Error al agregar producto: ' . $e->getMessage()
-            ], 500);
+
+            // Buscar la relación de talla específica
+            $tallaPivot = DB::table('producto_talla')
+                ->where('producto_id', $producto_id)
+                ->where('categoria_id', $request->talla_id)
+                ->first();
+
+            // Verificar stock de la talla
+            if (!$tallaPivot || $tallaPivot->stock <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Talla seleccionada sin stock'
+                ], 400);
+            }
+
+            // Crear o actualizar item del carrito con talla
+            $cliente = Auth::guard('cliente')->user();
+            $carritoItem = CarritoItem::firstOrNew([
+                'cliente_id' => $cliente->id,
+                'producto_id' => $producto_id,
+                'categoria_id' => $request->talla_id  // Usar ID de talla como categoría
+            ]);
+
+            $carritoItem->cantidad += 1;
+            $carritoItem->precio = $tallaPivot->precio;
+            $carritoItem->detalles = json_encode([
+                'talla_id' => $request->talla_id,
+                'talla_nombre' => Categoria::find($request->talla_id)->nombre
+            ]);
+            $carritoItem->save();
+
+            // Reducir stock de la talla
+            DB::table('producto_talla')
+                ->where('producto_id', $producto_id)
+                ->where('categoria_id', $request->talla_id)
+                ->decrement('stock');
+        } 
+        // Productos sin tallas
+        else {
+            // Verificar stock del producto
+            if ($producto->stock <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Producto sin stock'
+                ], 400);
+            }
+
+            $cliente = Auth::guard('cliente')->user();
+            $carritoItem = CarritoItem::firstOrNew([
+                'cliente_id' => $cliente->id,
+                'producto_id' => $producto_id,
+                'categoria_id' => $producto->categoria_id
+            ]);
+
+            $carritoItem->cantidad += 1;
+            $carritoItem->precio = $producto->precio;
+            $carritoItem->save();
+
+            // Reducir stock del producto
+            $producto->stock -= 1;
+            $producto->save();
         }
-    }
 
-    // Método para mostrar el carrito
-    public function showCart()
-    {
-        // Obtener los productos del carrito
-        $cart = session()->get('cart', []);
-        return view('scoobydoo.cart.index', compact('cart'));
-    }
+        // Contar items en el carrito
+        $cartCount = CarritoItem::where('cliente_id', $cliente->id)->count();
 
-    // Método para eliminar un producto del carrito
-    public function removeFromCart($productoId)
-    {
-        $cart = session()->get('cart', []);
-
-        // Eliminar el producto seleccionado
-        if (isset($cart[$productoId])) {
-            unset($cart[$productoId]);
-        }
-
-        // Guardar el carrito actualizado en la sesión
-        session()->put('cart', $cart);
-
-        return redirect()->route('cart.show');
-    }
-
-    // Método para actualizar la cantidad de un producto en el carrito
-    public function updateCart(Request $request, $productoId)
-    {
-        $cart = session()->get('cart', []);
-
-        // Verificar si el producto existe en el carrito
-        if (isset($cart[$productoId])) {
-            // Actualizar la cantidad del producto
-            $cart[$productoId]['cantidad'] = $request->input('cantidad');
-        }
-
-        // Guardar el carrito actualizado en la sesión
-        session()->put('cart', $cart);
-
-        return redirect()->route('cart.show');
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto agregado al carrito',
+            'cartCount' => $cartCount
+        ]);
     }
 }

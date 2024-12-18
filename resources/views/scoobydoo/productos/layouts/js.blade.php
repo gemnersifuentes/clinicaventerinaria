@@ -1,44 +1,7 @@
 
 <script>
 
-    // Función para abrir el modal
-    function openModal(producto) {
-        if (producto.categoria.nombre === 'Ropa') {
-            let imagenes = JSON.parse(producto.imagenes);
-            let imagenPrincipal = imagenes[0] ?? 'default-image.jpg';
-    
-            let tallasHTML = '';
-            producto.tallas.forEach(talla => {
-                tallasHTML += `
-                    <button 
-                        data-precio="${talla.pivot.precio}" 
-                        data-descuento="${producto.descuento || 0}" 
-                        data-id="${talla.id}"
-                        data-stock="${talla.pivot.stock}"
-                        class="px-4 py-2 bg-gray-200 rounded hover:bg-indigo-600 hover:text-white transition"
-                        onclick="selectTalla(this)">
-                        ${talla.nombre}
-                    </button>`;
-            });
-    
-            document.getElementById('tallasContainer').innerHTML = tallasHTML;
-            document.getElementById('modalTitle').innerText = producto.nombre;
-    
-            // Usar la ruta de la imagen
-            document.getElementById('modalImage').src = `/storage/${imagenPrincipal}`;
-    
-            // Inicializar valores en el modal
-            document.getElementById('modalPrice').innerHTML = '';
-            document.getElementById('modalStock').innerText = '';
-            document.getElementById('modal').classList.remove('hidden');
-    
-            // Seleccionar automáticamente la primera talla si existe
-            const primeraTalla = document.querySelector('#tallasContainer button');
-            if (primeraTalla) {
-                primeraTalla.click();
-            }
-        }
-    }
+
     // Función para seleccionar una talla
     function selectTalla(button) {
         // Desmarcar todos los botones
@@ -169,63 +132,7 @@
                     minPrice.value = this.value;
                 }
             });
-          
-     function addToCart() {
-        // Obtener el producto seleccionado
-        const selectedTalla = document.querySelector('#tallasContainer button.bg-indigo-600');
-        
-        if (!selectedTalla) {
-            alert('Por favor, selecciona una talla');
-            return;
-        }
-    
-        // Extraer información del producto
-        const productId = selectedTalla.getAttribute('data-producto-id') || document.getElementById('modalTitle').dataset.productId;
-        const tallaId = selectedTalla.getAttribute('data-id');
-    
-        // Verificar stock
-        const stock = parseInt(selectedTalla.getAttribute('data-stock') || 0);
-        if (stock <= 0) {
-            alert('Lo sentimos, este producto está agotado');
-            return;
-        }
-    
-        // Preparar datos para enviar
-        const formData = new FormData();
-        formData.append('talla_id', tallaId);
-    
-        // Enviar solicitud AJAX para agregar al carrito
-        fetch(`/cart/add/${productId}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Mostrar mensaje de éxito
-                alert(data.message);
-                
-                // Actualizar contador del carrito si existe
-                const cartCountElement = document.getElementById('cart-count');
-                if (cartCountElement) {
-                    cartCountElement.textContent = data.cartCount;
-                }
-                
-                // Cerrar modal
-                closeModal();
-            } else {
-                // Mostrar mensaje de error
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Hubo un problema al agregar el producto al carrito');
-        });
-    }
+
     
     // Modificar la función openModal para asegurar que funcione con la nueva lógica
     function openModal(producto) {
@@ -269,8 +176,6 @@
     }
            
         </script>
-    
-    
     
     
     

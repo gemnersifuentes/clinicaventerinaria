@@ -164,23 +164,36 @@
                 </div>
                 <div class="flex items-center text-gray-700 cursor-pointer">
                     <div class="flex flex-col ml-2 text-sm text-gray-600">
-                       
-                            <span id="userAccountBtn">Hola, </span>
+                        @if(Auth::guard('cliente')->check())
+                            {{-- Cliente autenticado --}}
+                            <span id="userAccountBtn">Hola, {{ explode(' ', Auth::guard('cliente')->user()->nombre)[0] }}</span>
+
+                            
                             <div class="relative">
                                 <button id="accountButton" style="margin-top: -10px;" class="py-2 text-gray-700">Mi Cuenta</button>
                                 <div id="accountDropdownMenu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md hidden z-50">
-                                    <a href="account.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Mi cuenta</a>
-                                    <a href="logout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Cerrar sesión</a>
+                                    <a href="{{ route('scoobydoo.cliente.mi_cuenta') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Mi cuenta</a>
+                                    <form method="POST" action="{{ route('scoobydoo.cliente.logout') }}">
+                                        @csrf  <!-- Este es el token CSRF -->
+                                        <button type="submit" class="text-red-600 hover:underline">Cerrar Sesión</button>
+                                    </form>
+                                    
                                 </div>
                             </div>
-                   
-                            <button id="accountButton" style="margin-top: -10px;" class="py-2 text-gray-700">Iniciar Sesión</button>
-                            <div id="accountDropdownMenu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md hidden z-50">
-                                <a href="loging.php" class="block px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100">Iniciar Sesión</a>
-                                <a href="crear.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Registrarse</a>
+                        @else
+                            {{-- Cliente no autenticado --}}
+                            <span id="userAccountBtn">Hola, Invitado</span>
+                            
+                            <div class="relative">
+                                <button id="accountButton" style="margin-top: -10px;" class="py-2 text-gray-700">Mi Cuenta</button>
+                                <div id="accountDropdownMenu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md hidden z-50">
+                                    <a href="{{ route('scoobydoo.cliente.login') }}" class="block px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100">Iniciar Sesión</a>
+                                    <a href="{{ route('scoobydoo.cliente.registro') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Registrarse</a>
+                                </div>
                             </div>
-                 
+                        @endif
                     </div>
+                    
 
 
 

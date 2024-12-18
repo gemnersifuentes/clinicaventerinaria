@@ -111,5 +111,20 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+    'guards' => [
+    // ... otros guards existentes
+    'cliente' => [
+        'driver' => 'session',
+        'provider' => 'clientes',
+    ],
+],
+
+'providers' => [
+    // ... otros providers existentes
+    'clientes' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Cliente::class,
+    ],
+],
 
 ];
